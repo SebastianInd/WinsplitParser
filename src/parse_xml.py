@@ -95,9 +95,11 @@ def _extract_person_result(person_result: ET.Element, namespace: dict) -> dict:
     person_dict = {}
 
     name = person_result.find(".//ns:Name", namespace)
-    family_name = name.find("ns:Family", namespace).text
-    given_name = name.find("ns:Given", namespace).text
-    person_dict["name"] = f"{given_name} {family_name}"
+    family_element = name.find("ns:Family", namespace) if name is not None else None
+    given_element = name.find("ns:Given", namespace) if name is not None else None
+    family_name = family_element.text if family_element is not None else ""
+    given_name = given_element.text if given_element is not None else ""
+    person_dict["name"] = f"{given_name} {family_name}".strip()
 
     organisation = person_result.find(".//ns:Organisation", namespace)
     club = organisation.find("ns:Name", namespace).text
