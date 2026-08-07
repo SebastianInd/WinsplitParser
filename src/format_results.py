@@ -1,3 +1,6 @@
+import re
+
+
 def _format_time(total_time_seconds: int) -> str:
     """
     Converts total time from seconds to mm:ss format.
@@ -99,9 +102,28 @@ def get_file_title(event_data: dict) -> str:
     """
     Formats the event data into a string with the event name and date.
     """
-    name = event_data["name"]
-    date = event_data["date"].replace("-", "")[2:]
-    return f"{date} {name}.docx"
+
+    def _sanitize_filename(filename: str, max_length: int = 200) -> str:
+        # Remove ASCII control characters
+        filename = "".join(ch for ch in filename if ord(ch) >= 32)
+        # Replace characters invalid on Windows filesystems with an underscore
+        filename = re.sub(r'[<>:"/\\|?*]', "_", filename)
+        # Collapse whitespace and strip ends
+        filename = re.sub(r"\s+", " ", filename).strip()
+        # Filenames can't end with a space or dot on Windows
+        filename = filename.rstrip(" .")
+        # Truncate if too long
+        if len(filename) > max_length:
+            filename = filename[:max_length].rstrip()
+        return filename
+
+    name = event_data.get("name", "event")
+    date = event_data.get("date", "").replace("-", "")[2:]
+    safe_name = _sanitize_filename(name)
+    if not safe_name:
+        safe_name = "event"
+    # Ensure we don't produce leading/trailing whitespace in the final filename
+    return f"{date} {safe_name}.docx".strip()
 
 
 def format_event_data(event_data: dict) -> str:
