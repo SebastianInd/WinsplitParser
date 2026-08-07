@@ -39,6 +39,7 @@ def _compute_split_information(person_result: ET.Element, namespace: dict) -> li
     previous_time = 0
     split_elements = person_result.findall(".//ns:SplitTime", namespace)
     for split in split_elements:
+        split_number = len(splits) + 1
         status = split.get("status", None)
         control_code = split.find("ns:ControlCode", namespace).text
 
@@ -54,6 +55,7 @@ def _compute_split_information(person_result: ET.Element, namespace: dict) -> li
 
         splits.append(
             {
+                "split_number": split_number,
                 "control_code": control_code,
                 "time": time,
                 "split_time": split_time,
@@ -66,6 +68,7 @@ def _compute_split_information(person_result: ET.Element, namespace: dict) -> li
     split_time = final_time - previous_time if previous_time is not None else None
     splits.append(
         {
+            "split_number": len(splits) + 1,
             "control_code": "F",
             "time": final_time,
             "split_time": split_time,

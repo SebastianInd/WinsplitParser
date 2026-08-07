@@ -9,19 +9,19 @@ def _compute_aggregated_split_times(results: list) -> dict:
         results (list): A list of dictionaries, each containing information about a person's result.
 
     Returns:
-        dict: A dictionary where the keys are control codes and the values are lists of split times sorted in ascending order.
+        dict: A dictionary where the keys are split numbers and the values are lists of split times sorted in ascending order.
     """
 
     aggregated_split_times = {}
 
     for person in results:
         for split in person["splits"]:
-            control_code = split["control_code"]
+            split_number = split["split_number"]
             split_time = split["split_time"]
 
             if split_time is None:
                 continue
-            aggregated_split_times.setdefault(control_code, []).append(split_time)
+            aggregated_split_times.setdefault(split_number, []).append(split_time)
 
     for key in aggregated_split_times:
         aggregated_split_times[key].sort()
@@ -43,9 +43,9 @@ def _add_reference_splits(data: dict) -> None:
     best_split_times = {}
     reference_split_times = {}
 
-    for control_code, splits in aggregated_split_times.items():
-        best_split_times[control_code] = splits[0]
-        reference_split_times[control_code] = statistics.mean(splits[:5])
+    for split_number, splits in aggregated_split_times.items():
+        best_split_times[split_number] = splits[0]
+        reference_split_times[split_number] = statistics.mean(splits[:5])
 
     data["best_split_times"] = best_split_times
     data["reference_split_times"] = reference_split_times
@@ -63,9 +63,9 @@ def _add_split_analysis(data: dict) -> None:
     """
     for person in data["results"]:
         for split in person["splits"]:
-            control_code = split["control_code"]
+            split_number = split["split_number"]
             split_time = split["split_time"]
-            best_split_time = data["best_split_times"][control_code]
+            best_split_time = data["best_split_times"][split_number]
 
             if split_time is None:
                 split_gap = None
@@ -81,7 +81,7 @@ def _add_split_analysis(data: dict) -> None:
 def process_data(data: dict):
     """
     Processes the given data to extract split information and compute the best split times
-    for each control point. Updates the results with split analysis and sets the winning time.
+    for each split leg. Updates the results with split analysis and sets the winning time.
 
     Args:
         data (dict): A dictionary containing race results and other related information.

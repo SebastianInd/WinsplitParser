@@ -15,10 +15,30 @@ class TestProcessData(unittest.TestCase):
                     "status": "OK",
                     "position": 1,
                     "splits": [
-                        {"control_code": "118", "time": 72, "split_time": 72},
-                        {"control_code": "40", "time": 202, "split_time": 130},
-                        {"control_code": "36", "time": 259, "split_time": 57},
-                        {"control_code": "58", "time": 379, "split_time": 120},
+                        {
+                            "split_number": 1,
+                            "control_code": "118",
+                            "time": 72,
+                            "split_time": 72,
+                        },
+                        {
+                            "split_number": 2,
+                            "control_code": "40",
+                            "time": 202,
+                            "split_time": 130,
+                        },
+                        {
+                            "split_number": 3,
+                            "control_code": "36",
+                            "time": 259,
+                            "split_time": 57,
+                        },
+                        {
+                            "split_number": 4,
+                            "control_code": "58",
+                            "time": 379,
+                            "split_time": 120,
+                        },
                     ],
                 },
                 {
@@ -28,10 +48,30 @@ class TestProcessData(unittest.TestCase):
                     "status": "MissingPunch",
                     "position": None,
                     "splits": [
-                        {"control_code": "118", "time": 80, "split_time": 80},
-                        {"control_code": "40", "time": None, "split_time": None},
-                        {"control_code": "36", "time": 280, "split_time": None},
-                        {"control_code": "58", "time": 380, "split_time": 100},
+                        {
+                            "split_number": 1,
+                            "control_code": "118",
+                            "time": 80,
+                            "split_time": 80,
+                        },
+                        {
+                            "split_number": 2,
+                            "control_code": "40",
+                            "time": None,
+                            "split_time": None,
+                        },
+                        {
+                            "split_number": 3,
+                            "control_code": "36",
+                            "time": 280,
+                            "split_time": None,
+                        },
+                        {
+                            "split_number": 4,
+                            "control_code": "58",
+                            "time": 380,
+                            "split_time": 100,
+                        },
                     ],
                 },
             ]
