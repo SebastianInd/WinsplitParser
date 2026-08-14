@@ -92,4 +92,30 @@ def process_data(data: dict):
     _add_reference_splits(data)
     _add_split_analysis(data)
 
-    data["winning_time"] = data["results"][0]["total_time"]
+    # Ensure results are ordered by position (placing non-finishers or missing
+    # positions at the end). This guarantees the first element is the winner
+    # when a position==1 exists.
+    def _position_sort_key(runner: dict):
+        pos = runner.get("position")
+        # Runners without a numeric position should sort after those with one
+        if pos is None:
+            return (1, float("inf"))
+        return (0, pos)
+
+    data["results"].sort(key=_position_sort_key)
+
+    # Set winning_time to the time of the runner in position 1 when available,
+    # otherwise fall back to the minimal valid total_time present.
+    winning_time = None
+    for runner in data["results"]:
+        if runner.get("position") == 1 and runner.get("total_time") is not None:
+            winning_time = runner["total_time"]
+            break
+
+    if winning_time is None:
+        valid_times = [
+            r["total_time"] for r in data["results"] if r.get("total_time") is not None
+        ]
+        winning_time = min(valid_times) if valid_times else None
+
+    data["winning_time"] = winning_time
