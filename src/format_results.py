@@ -1,14 +1,18 @@
 import re
 
 
-def _format_time(total_time_seconds: int) -> str:
-    """
-    Converts total time from seconds to mm:ss format.
-    """
+def _format_time(total_time_seconds) -> str:
+    """Converts total time from seconds (int or float) to mm:ss format."""
     if total_time_seconds is None:
         return "--"
-    minutes, seconds = divmod(total_time_seconds, 60)
-    return f"{minutes}.{int(seconds):02}"
+    # Ensure we work with numeric values and compute integer minutes/seconds
+    try:
+        total = float(total_time_seconds)
+    except (TypeError, ValueError):
+        return "--"
+    minutes = int(total // 60)
+    seconds = int(total % 60)
+    return f"{minutes}.{seconds:02}"
 
 
 def _format_runner_title(result: dict, winning_time: int) -> str:

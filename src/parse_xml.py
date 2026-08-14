@@ -46,7 +46,13 @@ def _compute_split_information(person_result: ET.Element, namespace: dict) -> li
         if status == "Missing":
             time = None
         else:
-            time = int(split.find("ns:Time", namespace).text)
+            # Some sources use decimal seconds (e.g. '1910.8').
+            # Parse as float and round to nearest integer second for compatibility.
+            time_text = split.find("ns:Time", namespace).text
+            try:
+                time = int(round(float(time_text)))
+            except (TypeError, ValueError):
+                time = None
 
         if previous_time is not None and time is not None:
             split_time = time - previous_time
@@ -64,7 +70,12 @@ def _compute_split_information(person_result: ET.Element, namespace: dict) -> li
         previous_time = time
 
     # TODO handle missing finish time
-    final_time = int(person_result.find(".//ns:Time", namespace).text)
+    # Final time may also contain decimals; parse similarly to split times.
+    final_time_text = person_result.find(".//ns:Time", namespace).text
+    try:
+        final_time = int(round(float(final_time_text)))
+    except (TypeError, ValueError):
+        final_time = None
     split_time = final_time - previous_time if previous_time is not None else None
     splits.append(
         {
@@ -117,7 +128,12 @@ def _extract_person_result(person_result: ET.Element, namespace: dict) -> dict:
         person_dict["position"] = None
     if result.find(".//ns:Time", namespace) is None:
         return None
-    person_dict["total_time"] = int(result.find(".//ns:Time", namespace).text)
+    # Total time may contain decimal seconds; parse as float then round to int seconds.
+    total_time_text = result.find(".//ns:Time", namespace).text
+    try:
+        person_dict["total_time"] = int(round(float(total_time_text)))
+    except (TypeError, ValueError):
+        person_dict["total_time"] = None
     person_dict["splits"] = _compute_split_information(person_result, namespace)
 
     return person_dict
